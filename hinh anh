@@ -1,0 +1,15 @@
+	..		
+css	init project	
+images	init project	
+js	auto update current account after changed wallet
+lib	update nebulas.js	
+check.html	check_tx: add auto check	
+contract.html	init project	
+index.html	init project	
+main.html.ori	init project	
+options.html	init project	
+sendNas.html	switch "change wallet" button text to be more clear	
+sendOffline.html	init project	
+server.js	init project	
+viewWalletInfo.html	init project	
+welcome.html	update, add notice page on installed
