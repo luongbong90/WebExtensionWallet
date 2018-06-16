@@ -19,6 +19,5 @@ npm-debug.log
 /bower
 .npm/
 packages/
-dist/
+
 .idea/
-lib/nvm/.storage

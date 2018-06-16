@@ -1,21 +1,24 @@
-# Nebulas JavaScript API
+# nebPay
 
-[![](https://data.jsdelivr.com/v1/package/npm/nebulas/badge)](https://www.jsdelivr.com/package/npm/nebulas)
+[![](https://data.jsdelivr.com/v1/package/npm/nebpay.js/badge)](https://www.jsdelivr.com/package/npm/nebpay.js)
 
-[![NPM](https://nodei.co/npm/nebulas.png)](https://nodei.co/npm/nebulas/)
+[![NPM](https://nodei.co/npm/nebpay.js.png)](https://nodei.co/npm/nebpay.js/)
 
-This is the Nebulas compatible JavaScript API. Users can use it in browser and node.js. This javascript library also support API for our Repl console. Users can sign/send transactions and deploy/call smart contract with it. [neb.js](https://github.com/nebulasio/neb.js)
+This is the Nebulas payment JavaScript API. Users can use it in browser on both PC and mobile. Users can do NAS payment through [Chrome extension](https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco) and [iOS/Android wallet]((https://nano.nebulas.io/)) with it. [nebPay](https://github.com/nebulasio/nebPay)
 
 
 ## Install && Package
 
-Use the `npm` installation dependencies
+Use `npm` to install dependencies:
 
 ```
 npm install
 ```
 
-Use `gulp` to package the neb.js:
+ **Notice:The official version of the package in NPMJS is `nebpay.js`, not `nebpay` and etc.**
+
+
+Use `gulp` to package the nebPay:
 
 ```
 gulp
@@ -25,39 +28,66 @@ Now we can check the newly created files in `/dist`
 
 Here you should see a bunch of js files. 
 
- * `neb.js`:Used in browser side. Including outside dependency.
- * `neb-light.js`:Used in Repl console. Not including outside dependency.
- * `nebulas.js`: Fully functional in the browser. Users can create an address, sign a transaction, and deploy/call a smart contract.
+ * `nebPay.js`: Used in browser side. Including outside dependency.
 
 ###### CDN Support
-neb.js has been released to [NPM](https://www.npmjs.com/package/nebulas), and developers can use the following code through [CDN](https://www.jsdelivr.com/package/npm/nebulas) addition.
+Nebpay has been released to [NPM](https://www.npmjs.com/package/nebpay.js), and developers can use the following code through [CDN](https://www.jsdelivr.com/package/npm/nebpay.js) addition.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/nebulas@0.5.2/dist/nebulas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nebpay.js@0.2.0/nebpay.min.js"></script>
 ```
+
+## Usage
+
+`nebPay.js` is a useful library for Nebulas DApp developers. It provides rich underlying support in web's DApp. It implements the payment functions.
+
+For the usage of nebPay please refer to this example:
+
+* [example](examples/example.html) 
+
+### Wallet support
+
+#### iOS/Android wallet
+Nebpay supports evoking mobile wallets, allowing users to pay via their phones. **Mobile payment is safe and convenient. We recommend you to pay by mobile wallet.**
+
+* [Nas Nano](https://nano.nebulas.io/)
+
+***
+*Tips*:NAS Nano also provides a test version of the wallet for the Testnet, which only supports the use of the wallet in the Testnet for developers to test.
+
+- [iOS for Testnet](itms-services://?action=download-manifest&url=https://testnet.nebulas.io/static/wallet/ios/NASnano.plist)
+- [Android for Testnet](https://testnet.nebulas.io/static/wallet/android/nas-nano-Testnet-v1.2.2.apk)
+
+***
+
+#### Chrome extension wallet
+
+An implementation of chrome extension contributed by community is:
+
+* [NasExtWallet](https://chrome.google.com/webstore/detail/nasextwallet/gehjkhmhclgnkkhpfamakecfgakkfkco)
+
+The parameter [`options.callback`](/doc/NebPay_Introduction.md#options) is used for querying transaction result. And it's mainnet by default if you don't specify it. 
+
+* to select mainnet: `callback : NebPay.config.mainnetUrl` (default value)
+* to select testnet: `callback : NebPay.config.testnetUrl` 
 
 ## Documentation
 
+All NebPay SDK documents are in `doc` folder.
 
-<a target="_blank" href="https://nebulasio.github.io/neb.js/index.html">Public API documentation link</a>
+* [doc](/doc)
 
-For build API documentation run `gulp documentation` task.
+And also there is a blog tutorial:
 
-Generated documentation you can check in `/documentation` folder.
+* [How to use NebPay in your DApp](https://medium.com/nebulasio/how-to-use-nebpay-in-your-dapp-8e785e560fbb)
+* [如何在 DApp 中使用 NebPay SDK](https://blog.csdn.net/ycyzyp/article/details/80261142)
 
-## Usage
-`neb.js` is a useful library for nebulas developers. It provides rich underlying support in web and node.js's dapp. It implements the following functions.
+## The process of a transaction using NebPay
+![](doc/flow_chart.png)
 
-* The RPC interface for the nebulas node is encapsulated;
-* Create and manage the private key and address of the nebulas;
-* Generate the transaction object and sign the transaction.
-* Deploy/call smart contract, breakpoint debugging support.
+## Wiki
 
-The use of neb.js can be used as examples:
-
-* [web-example](example/example.html) 
-* [nodejs-example](example/node-example.js)
-* [node-nvm](example/node-nvm.js)
+Please check our [Wiki](https://github.com/nebulasio/wiki) to learn more about Nebulas.
 
 ## Contribution
 
