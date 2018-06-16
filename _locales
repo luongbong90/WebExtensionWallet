@@ -1,0 +1,11 @@
+@@ -0,0 +1,10 @@
++ {
++   " appName " : {
++     " message " : " NasExtWallet " ,
++     " description " : " Phần mở rộng cho Nebulas Dapp "
++},
++   " appDesc " : {
++     " message " : " Tiện ích mở rộng này được thiết kế cho người dùng Nebulas " ,
++     " description " : " WebExtensionWallet là một phần mở rộng chrome dành cho các nhà phát triển dapp để gửi các giao dịch tới Nebulas BlockChain! Bây giờ nó đã thêm vào NbePay SKD. "
++}
++} 
