@@ -1,74 +1,80 @@
+<!-- 
+HardlySocial stores one message per user.  Users can come back to update their message anytime.
+Built for Nebulas by HardlyDifficult.  youtube.com/HardlyDifficult
+License: https://github.com/hardlydifficult/HardlySocialNebulas/blob/master/LICENSE
+
+See also HardlySocialContract.js
+-->
+
 <!doctype html>
 <html>
 <head>
     <meta charset=utf-8>
-    <title>DecentralizedRNG</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-    <link rel="stylesheet" href="darkly.css" media="screen">
-    <link rel="stylesheet" href="DecentralizedRNG.css">
+    <title>Hardly Social</title>
     <script src=nebPay.js></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div id="header"></div>
-
-    <div id="content">
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Max Number:</span>
-            </div>
-            <input type=number id=new_request_max class="form-control"></input>
-        </div>
-        <div class="input-group">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Data:</span>
-            </div>
-            <textarea id=new_request_data class="form-control"></textarea> 
-        </div>
-        <div class="input-group">
-            <button id=request_number onclick="javascript:onClickRequestNumber()" class="btn btn-primary">Request Number</button>
-        </div>
-    </div>
-
-    <div id="footer"></div> 
-
-    <script src=DecentralizedRNG.js></script>
+        <!-- Message history -->
+        <div id=message_history></div>
+        
+        <!-- The Dapp form -->
+        <textarea id=my_message></textarea>
+        <button id=post_message onclick="javascript:onClickPostMessage()">Post message</button>
+        <button id=refresh onclick="javascript:onClickRefresh()">Refresh</button>
+        
+        <script src=lib/jquery-3.3.1.min.js></script>
     
+    <!-- Front end logic for our Dapp -->
     <script>
         "use strict";
-      
+
+        // Global variables used by our Dapp
+        var contract_address = "n22FYgAabaa2r1hZqD1Jbk6Rz2wsRp68K6E";
+
         var NebPay = require("nebpay");
         var nebPay = new NebPay();
-        
-        function onClickRequestNumber() {
-            var max = parseInt($("#new_request_max").val());
-            var data = $("#new_request_data").val();
-            
-            nebPay.call(contract_address, 0, "requestNumber", JSON.stringify([max, data]), {
-                listener: onRequestNumber
-            });         
-        }
 
-        function onRequestNumber(resp) {
-            if(typeof(resp)==='string' && resp.startsWith("Error")) {
-                throw new Error(resp);
-            }
-
-            var href = window.location.href;
-            var dir = href.substring(0, href.lastIndexOf('/')) + "/";
-            window.location = dir + 'results.html?txhash=' + resp.txhash;            
-        }
-        
         //to check if the extension is installed
         //if the extension is installed, var "webExtensionWallet" will be injected in to web page
         if(typeof(webExtensionWallet) === "undefined"){
-            alert ("Extension wallet is not installed, redirecting you to more information.");
-            var href = window.location.href;
-            var dir = href.substring(0, href.lastIndexOf('/')) + "/";
-            window.location =  dir + 'about.html';  
+            alert ("Extension wallet is not installed, please install it first.")
         }
+
+        // Called by the Refresh button
+        function onClickRefresh() {
+            nebPay.simulateCall(contract_address, 0, "getMessages", null,   
+            {
+                listener: onGetMessages
+            });
+
+            nebPay.simulateCall(contract_address, 0, "getMyMessage", null,   
+            {
+                listener: onGetMyMessage
+            });
+        }
+
+        function onGetMessages(resp) {
+            $("#message_history").empty();
+
+            var messages = JSON.parse(resp.result);
+            for(var i = 0; i < messages.length; i++) {
+                var $span = $("<span></span>").text(messages[i]);
+                $("#message_history").append($span);
+                $("#message_history").append("<br><hr><br>");
+            }
+        }
+
+        function onGetMyMessage(resp) {
+            var message = JSON.parse(resp.result);
+            $("#my_message").val(message); 
+        }
+
+        // Called by the post button
+        function onClickPostMessage() {
+            nebPay.call(contract_address, 0, "postMessage", JSON.stringify([$("#my_message").val()]));         
+        }
+
+        onClickRefresh();
     </script>
 </body>
 </html>
