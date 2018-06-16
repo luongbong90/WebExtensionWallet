@@ -1,80 +1,112 @@
-<!-- 
-HardlySocial stores one message per user.  Users can come back to update their message anytime.
-Built for Nebulas by HardlyDifficult.  youtube.com/HardlyDifficult
-License: https://github.com/hardlydifficult/HardlySocialNebulas/blob/master/LICENSE
-
-See also HardlySocialContract.js
--->
-
 <!doctype html>
 <html>
 <head>
     <meta charset=utf-8>
-    <title>Hardly Social</title>
-    <script src=nebPay.js></script>
+    <link rel="icon shortcut" href=img/logo.png type=image/png>
+    <link rel=apple-touch-icon href=img/logo.png>
+    <link rel=stylesheet href=lib/bootstrap-4.0.0-dist/css/bootstrap.min.css>
+    <link rel=stylesheet href=css/base.css>
+    <link rel=stylesheet href=css/ui-block.css>
+    <meta name=viewport content="width=device-width">
+    <title>NEBULAS</title>
+    <style>
+        input {
+            text-align: center;
+        }
+
+        .active1 {
+            display: none;
+        }
+
+        .download {
+            margin-top: 48px;
+            text-align: center;
+        }
+
+        .wallet_help {
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
-        <!-- Message history -->
-        <div id=message_history></div>
-        
-        <!-- The Dapp form -->
-        <textarea id=my_message></textarea>
-        <button id=post_message onclick="javascript:onClickPostMessage()">Post message</button>
-        <button id=refresh onclick="javascript:onClickRefresh()">Refresh</button>
-        
-        <script src=lib/jquery-3.3.1.min.js></script>
-    
-    <!-- Front end logic for our Dapp -->
+    <div class=logo-main></div>
+    <div class=header></div>
+
+    <div class="container wallet">
+        <div id=newWallet>
+            <div class=form-group>
+                <label for=password data-i18n=new/enter-password>Enter a password:（Not less than 9 characters）</label>
+                <input type=password class=form-control id=password data-i18n=new/placeholder/do-not-forget placeholder="Do NOT forget to save this!" data-validate-order-matters="required lengthGt8">
+            </div>
+            <button class="btn btn-block" data-i18n=new/new id=creat>Create New Wallet</button>
+        </div>
+        <div class="active1 download">
+            <h1>
+                <span data-i18n=new/save1>Save your</span>
+                <code data-i18n=keystore-file></code>
+                <span data-i18n=new/save3>File.</span>
+            </h1>
+            <button class="btn btn-block" data-i18n=new/gen>Download Keystore File</button>
+        </div>
+        <p class=wallet_help data-i18n=new/comment>
+            This password encrypts your private key.
+            <br>This does not act as a seed to generate your keys.
+            <br>You will need this password + your private key to unlock your wallet.
+        </p>
+    </div>
+
+    <div class=footer></div>
+
+    <script src=lib/jquery-3.3.1.min.js></script>
+    <script src=lib/bootstrap-4.0.0-dist/js/bootstrap.bundle.min.js data-depends=jquery.slim></script>
+    <script src=lib/bootbox.min.js data-depends="bootstrap jquery.slim"></script>
+    <script src=lib/Blob.js></script>
+    <script src=lib/FileSaver.min.js></script>
+    <script src=lib/nebulas.js></script>
+    <script src=js/1-localSave.js></script>
+    <script src=js/home.v1.js></script>
+    <script src=js/i18n.js data-depends=jquery.slim></script>
+    <script src=js/ui-block.js data-depends="bootbox blockies jquery.slim i18n.js nebulas.js"></script>
     <script>
         "use strict";
 
-        // Global variables used by our Dapp
-        var contract_address = "n22FYgAabaa2r1hZqD1Jbk6Rz2wsRp68K6E";
+        // replace ="([^ =]+)" with =$1
 
-        var NebPay = require("nebpay");
-        var nebPay = new NebPay();
+        var nebulas = require("nebulas"),
+            account = nebulas.Account.NewAccount(), //TODO：流程位置 应该在创建之后 。创建密码应该删除 
+            validateAll = uiBlock.validate();
 
-        //to check if the extension is installed
-        //if the extension is installed, var "webExtensionWallet" will be injected in to web page
-        if(typeof(webExtensionWallet) === "undefined"){
-            alert ("Extension wallet is not installed, please install it first.")
+        uiBlock.insert({
+            footer: ".footer",
+            header: ".header",
+            logoMain: ".logo-main"
+        });
+
+        $("#creat").on("click", onClickCreate);
+        $(".download button").on("click", onClickDownloadButton);
+
+        function onClickCreate() {
+            validateAll() && $(".download").removeClass("active1");
         }
 
-        // Called by the Refresh button
-        function onClickRefresh() {
-            nebPay.simulateCall(contract_address, 0, "getMessages", null,   
-            {
-                listener: onGetMessages
-            });
+        function onClickDownloadButton() {
+            var password = $("#password").val(), address, keyStr, blob;
 
-            nebPay.simulateCall(contract_address, 0, "getMyMessage", null,   
-            {
-                listener: onGetMyMessage
-            });
-        }
+            if (validateAll()) {
+                bootbox.alert({
+                    message: "waiting...",
+                    title: "info"
+                });
 
-        function onGetMessages(resp) {
-            $("#message_history").empty();
+                // window.open('tokey.html?password=' + password, '_blank');
 
-            var messages = JSON.parse(resp.result);
-            for(var i = 0; i < messages.length; i++) {
-                var $span = $("<span></span>").text(messages[i]);
-                $("#message_history").append($span);
-                $("#message_history").append("<br><hr><br>");
+                address = account.getAddressString();
+                keyStr = account.toKeyString(password);
+                blob = new Blob([keyStr], { type: "application/json; charset=utf-8" });
+                saveAs(blob, address);
+                bootbox.hideAll();
             }
         }
-
-        function onGetMyMessage(resp) {
-            var message = JSON.parse(resp.result);
-            $("#my_message").val(message); 
-        }
-
-        // Called by the post button
-        function onClickPostMessage() {
-            nebPay.call(contract_address, 0, "postMessage", JSON.stringify([$("#my_message").val()]));         
-        }
-
-        onClickRefresh();
     </script>
 </body>
 </html>
